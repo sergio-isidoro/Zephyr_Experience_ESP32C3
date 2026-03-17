@@ -21,3 +21,6 @@ using atomic operations to ensure integrity between contexts (ISR vs Main).
 ### Hardware Corrections:
 - **Driver Compatibility:** Adjustment of `'compatible'` to `"solomon,ssd1306fb"` according to Zephyr 4.x requirements.
 - **Pinctrl:** Pin mapping via `Pinctrl` for the ESP32-C3 SuperMini format.
+
+## Image
+![alt text](circuit.png)
