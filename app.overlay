@@ -1,0 +1,111 @@
+#include <zephyr/dt-bindings/i2c/i2c.h>
+#include <zephyr/dt-bindings/pwm/pwm.h>
+
+/ {
+	#address-cells = <1>;
+	#size-cells = <1>;
+	
+	chosen {
+		zephyr,display = &ssd1306;
+	};
+
+	pwm_leds {
+		compatible = "pwm-leds";
+		
+		pwm_gpio2: pwm_gpio2 {
+			pwms = <&ledc0 0 50000 PWM_POLARITY_NORMAL>;	/* 20kHz */
+		};
+		
+		pwm_gpio3: pwm_gpio3 {
+			pwms = <&ledc0 1 100000 PWM_POLARITY_NORMAL>;	/* 10kHz */
+		};
+	};
+
+	aliases {
+		led0 = &led_azul_placa;
+		sw0 = &button_boot;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		
+		led_azul_placa: led_azul {
+			gpios = <&gpio0 8 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	buttons {
+		compatible = "gpio-keys";
+		
+		button_boot: button_boot {
+			gpios = <&gpio0 9 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+		};
+	};
+};
+
+&i2c0 {
+	status = "okay";
+	clock-frequency = <I2C_BITRATE_STANDARD>;
+
+	ssd1306: ssd1306@3c {
+		compatible = "solomon,ssd1306fb";
+		status = "okay";
+		reg = <0x3c>;
+		width = <72>;
+		height = <40>;
+		segment-offset = <28>;
+		page-offset = <0>;
+		display-offset = <0>;
+		multiplex-ratio = <39>;
+		segment-remap;
+		com-invdir;
+		prechargep = <0x22>;
+	};
+	
+	aht10: aht10@38 {
+		compatible = "aosong,aht10";
+		reg = <0x38>;
+	};
+};
+
+&coretemp { 
+	status = "okay"; 
+};
+
+&ledc0 {
+	status = "okay";
+	#pwm-cells = <3>;
+	pinctrl-0 = <&ledc0_default>;
+	pinctrl-names = "default";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	
+	channel0@0 {
+		reg = <0x0>;
+		timer = <0>;
+	};
+	
+	channel1@1 { 
+		reg = <0x1>;
+		timer = <1>;
+	};
+};
+
+&pinctrl {
+	i2c0_default: i2c0_default {
+		group1 {
+			pinmux = <I2C0_SDA_GPIO5>, <I2C0_SCL_GPIO6>;
+			bias-pull-up;
+			drive-open-drain;
+			output-high;
+		};
+	};
+	
+	ledc0_default: ledc0_default {
+		group1 {
+			pinmux = <LEDC_CH0_GPIO2>, <LEDC_CH1_GPIO3>;
+			output-enable;
+		};
+	};
+
+};
