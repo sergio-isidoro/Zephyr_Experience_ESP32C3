@@ -23,4 +23,4 @@ using atomic operations to ensure integrity between contexts (ISR vs Main).
 - **Pinctrl:** Pin mapping via `Pinctrl` for the ESP32-C3 SuperMini format.
 
 ## Image
-![alt text](circuit.png)
+![alt text](img/circuit.png)
