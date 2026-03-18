@@ -14,6 +14,7 @@
 #include <zephyr/drivers/pwm.h>
 #include <zephyr/drivers/watchdog.h>
 #include <zephyr/sys/atomic.h>
+#include <esp_private/esp_clk.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -51,7 +52,7 @@ K_SEM_DEFINE(sem_system_ready, 0, 1);
 K_SEM_DEFINE(sem_sensor_wait, 0, 1);
 K_SEM_DEFINE(sem_main_tick, 0, 1);
 
-/** @brief Timer callbacks para sinalização */
+/** Timer callbacks for signaling */
 void display_timer_cb(struct k_timer *dummy) { k_sem_give(&sem_ui_refresh); }
 void heartbeat_timer_cb(struct k_timer *dummy) { atomic_set(&heartbeat_trigger, 1); }
 void sensor_timer_cb(struct k_timer *dummy) { k_sem_give(&sem_sensor_wait); }
@@ -62,7 +63,7 @@ K_TIMER_DEFINE(heartbeat_timer, heartbeat_timer_cb, NULL);
 K_TIMER_DEFINE(sensor_timer, sensor_timer_cb, NULL);
 K_TIMER_DEFINE(main_timer, main_tick_cb, NULL);
 
-/** @brief Button ISR to toggle the internal status LED */
+/** Button ISR to toggle the internal status LED */
 void button_isr(const struct device *dev, struct gpio_callback *cb, uint32_t pins) {
     static uint32_t last_press = 0;
     uint32_t now = k_uptime_get_32();
@@ -107,7 +108,6 @@ void display_task_entry(void *p1, void *p2, void *p3) {
             uint8_t measure_cmd[] = {AHT10_CMD_MEASURE, 0x33, 0x00};
             uint8_t raw_data[AHT10_DATA_SIZE];
             if (i2c_write_dt(&sensor_bus, measure_cmd, sizeof(measure_cmd)) == 0) {
-                /* Substituição do k_msleep por Timer One-shot + Semaforo */
                 k_timer_start(&sensor_timer, K_MSEC(AHT10_MEASURE_WAIT), K_NO_WAIT);
                 k_sem_take(&sem_sensor_wait, K_FOREVER);
 
@@ -121,7 +121,10 @@ void display_task_entry(void *p1, void *p2, void *p3) {
             }
         }
 
-        snprintf(buffer, sizeof(buffer), "Manoper");
+        uint32_t cpu_speed_hz = esp_clk_cpu_freq();
+        uint32_t cpu_speed_mhz = cpu_speed_hz / 1000000;
+
+        snprintf(buffer, sizeof(buffer), "%lu MHz", (unsigned long)cpu_speed_mhz);
         cfb_print(disp, buffer, (screen_w - strlen(buffer)*font_w)/2, 0);
         snprintf(buffer, sizeof(buffer), "%d.%dC", aht_temp_i, abs(aht_temp_d));
         cfb_print(disp, buffer, (screen_w - strlen(buffer)*font_w)/2, (screen_h/2)-(font_h/2)+1);

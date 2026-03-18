@@ -4,6 +4,24 @@
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
+
+	cpus {
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "espressif,riscv";
+			reg = <0>;
+			clock-frequency = <160000000>;
+			xtal-freq = <40000000>;
+		};
+	};
+
+	clock: clock {
+		compatible = "espressif,esp32-clock";
+		status = "okay";
+		#clock-cells = <1>;
+		fast-clk-src = <1>; 
+		slow-clk-src = <0>;
+	};
 	
 	chosen {
 		zephyr,display = &ssd1306;
