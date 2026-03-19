@@ -127,3 +127,16 @@
 	};
 
 };
+
+&flash0 {
+    partitions {
+        compatible = "fixed-partitions";
+        #address-cells = <1>;
+        #size-cells = <1>;
+
+        my_storage: partition@250000 {
+            label = "nvs_storage"; 
+            reg = <0x00250000 0x00004000>; 
+        };
+    };
+};
