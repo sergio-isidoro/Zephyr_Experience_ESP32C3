@@ -9,8 +9,8 @@
 /* Hardware specifications retrieved from the Devicetree */
 static const struct gpio_dt_spec led_internal = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
 static const struct gpio_dt_spec btn_boot     = GPIO_DT_SPEC_GET(DT_ALIAS(sw0), gpios);
-static const struct pwm_dt_spec  pwm_fade      = PWM_DT_SPEC_GET(DT_NODELABEL(pwm_gpio2));
-static const struct pwm_dt_spec  pwm_static    = PWM_DT_SPEC_GET(DT_NODELABEL(pwm_gpio3));
+//static const struct pwm_dt_spec  pwm_fade      = PWM_DT_SPEC_GET(DT_NODELABEL(pwm_gpio2));
+//static const struct pwm_dt_spec  pwm_static    = PWM_DT_SPEC_GET(DT_NODELABEL(pwm_gpio3));
 
 /* Atomic flags for thread-safe state management */
 atomic_t heartbeat_enabled = ATOMIC_INIT(1);  /* Tracks if the LED should blink */
@@ -51,14 +51,14 @@ void init_pwm_gpio(void) {
     gpio_add_callback(btn_boot.port, &btn_cb_data);
 
     /* PWM Channel 1: Static 10% Duty Cycle */
-    if (device_is_ready(pwm_fade.dev)) {
-        pwm_set_dt(&pwm_fade, pwm_fade.period, PWM_PERCENT(pwm_fade.period, 10));
-    }
+    //if (device_is_ready(pwm_fade.dev)) {
+        //pwm_set_dt(&pwm_fade, pwm_fade.period, PWM_PERCENT(pwm_fade.period, 10));
+    //}
 
     /* PWM Channel 2: Static 20% Duty Cycle */
-    if (device_is_ready(pwm_static.dev)) {
-        pwm_set_dt(&pwm_static, pwm_static.period, PWM_PERCENT(pwm_static.period, 20));
-    }
+    //if (device_is_ready(pwm_static.dev)) {
+        //pwm_set_dt(&pwm_static, pwm_static.period, PWM_PERCENT(pwm_static.period, 20));
+    //}
 }
 
 /**

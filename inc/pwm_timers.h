@@ -17,7 +17,7 @@
  * @param period Total period of the PWM signal (usually in nanoseconds).
  * @param percent Desired duty cycle (0 to 100).
  */
-#define PWM_PERCENT(period, percent)    ((uint64_t)(period) * (percent) / 100)
+//#define PWM_PERCENT(period, percent)    ((uint64_t)(period) * (percent) / 100)
 
 /* * Shared Atomic Flags
  * Used for thread-safe communication between Timers, ISRs, and the Main Loop.
